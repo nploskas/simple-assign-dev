@@ -1,0 +1,20 @@
+{% extends 'admin/my_master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+{{ super() }}
+
+<br/>
+<br/>
+<br/>
+
+{% if current_user.is_authenticated %}
+<h1>Hello, {{current_user.username }}</h1>
+{% else %}
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endif %}
+{% endblock body %}
+
+

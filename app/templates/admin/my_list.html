@@ -1,0 +1,17 @@
+
+
+{% extends 'admin/model/list.html' %}
+{% block list_row_actions %}
+    {{ super() }}
+
+  <form class="icon" method="POST" action="/abview/">
+    <input name="rowid" value="{{ get_pk_value(row) }}" type="hidden">
+    <input name="order_id" value="{{ row.order_id }}" type="hidden">
+    <button title="Open">
+      <span class="fa fa-time glyphicon glyphicon-time"></span>
+    </button>
+  </form>
+
+{% endblock %}
+
+

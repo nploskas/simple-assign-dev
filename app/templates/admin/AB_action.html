@@ -1,0 +1,101 @@
+{% extends 'admin/my_master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+<style>
+hr {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jquery-ui.css') }}">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="{{ url_for('static', filename='ab_script.js') }}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<meta id="order_list_url_meta" data-ol_url="{{order_list_url}}">
+
+{% endblock head %}
+
+{% block body %}
+
+<hr>
+<form>
+  <div class="form-group">
+    <label for="order_id">Order ID</label>
+    <input class="form-control" id="order_id" value="{{ order.order_id }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="insertion_dt">Insertion Date/Time</label>
+    <input class="form-control" id="insertion_dt" value="{{ order.insertion_dt or ' ' }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="type">Type</label>
+    <input class="form-control" id="type" value="{{ order.type.name }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="category">Category</label>
+    <input class="form-control" id="category" value="{{ order.category.name }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="central_office">Central Office</label>
+    <input class="form-control" id="central_office" value="{{ order.central_office }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="installation_address">Installation Address</label>
+    <input class="form-control" id="installation_address" value="{{ order.installation_address }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="customer_surname">Customer Surname</label>
+    <input class="form-control" id="customer_surname" value="{{ order.customer.surname }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="customer_first_name">Customer First Name</label>
+    <input class="form-control" id="customer_first_name" value="{{ order.customer.first_name }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="customer_vat_number">Customer VAT number</label>
+    <input class="form-control" id="customer_vat_number" value="{{ order.customer.vat_number }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="phone_number_1">Customer Contact Phone Number #1</label>
+    <input class="form-control" id="phone_number_1" value="{{ order.customer.phone_number_1 }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="phone_number_2">Customer Contact Phone Number #2</label>
+    <input class="form-control" id="phone_number_2" value="{{ order.customer.phone_number_2 }}" readonly>
+  </div>
+</form>
+
+<button type="button" class="btn btn-danger" onclick="orders_list()" style="min-width: 140px;">Back to order list</button>
+
+{% for task in order.tasks%}
+<hr>
+<form action="/ganttpreview/" method="POST">
+  <div class="form-group">
+    <label for="{{task.task_id+'start_dt'}}">{{task.task_type.label+' Planned Start Date/Time'}}</label>
+    <input class="form-control" id="{{task.task_id+'start_dt'}}" value="{{ task.planned_start_dt or ' ' }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="{{task.task_id+'end_dt'}}">{{task.task_type.label+' Planned End Date/Time'}}</label>
+    <input class="form-control" id="{{task.task_id+'end_dt'}}" value="{{ task.planned_end_dt or ' ' }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="{{task.task_id+'assigned_to'}}">Assigned to</label>
+    <input class="form-control" id="{{task.task_id+'assigned_to'}}" value="{{ task.user.email }}" readonly>
+  </div>
+  <div class="form-group">
+    <label for="{{task.task_id+'status'}}">Status</label>
+    <input class="form-control" id="{{task.task_id+'status'}}" value="{{ task.status }}" readonly>
+  </div>
+  <input name="task_id" value="{{ task.task_id }}" type="hidden">
+  <button type="submit" class="btn btn-primary btn-md" style="min-width: 140px;">Schedule</button>
+</form>
+{% endfor %}
+<br>
+
+{% endblock body %}
+

@@ -1,0 +1,82 @@
+{% extends 'admin/my_master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='gantt_style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jquery-ui.css') }}">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="{{ url_for('static', filename='gantt_script.js') }}"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<meta id="existing_data" data-tt="{{existing}}">
+<meta id="target_task_id_data" data-tt="{{target_task.task_id}}">
+<meta id="target_order_id_data" data-tt="{{target_task.order.order_id}}">
+<meta id="target_type_data" data-tt="{{target_task.task_type.short_label}}">
+<meta id="target_dd_data" data-tt="{{target_task.task_type.default_duration}}">
+<meta id="target_start_data" data-tt="{{target_task.start_time_index()}}">
+
+
+{% endblock head %}
+
+{% block body %}
+
+<form id="form_date" action="/ganttpreview/" method="POST">
+  <div class="form-group">
+    <label for="datepicker">Date</label>
+    <input class="form-control" id="datepicker" name="datepicker" value={{date_picked.strftime("%Y-%m-%d")}}>
+  </div>
+</form>
+
+<div class="chart">
+<div class="chart-row chart-period">
+    <span></span>
+    <span>08:00</span><span>09:00</span><span>10:00</span>
+    <span>11:00</span><span>12:00</span><span>13:00</span><span>14:00</span>
+    <span>15:00</span><span>16:00</span><span>17:00</span>
+    <span>18:00</span><span>19:00</span>
+</div>
+
+<div class="chart-row chart-lines">
+    <span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+    <span></span><span></span>	<span></span>
+</div>
+
+{% for user in users %}
+    <div class="chart-row">
+	    <div class="chart-row-item">{{user.email}}</div>
+	    <ul class="chart-row-bars" id="{{user.email}}" data-toggle="tooltip" ondrop="drop(event, this)" ondragover="allowDrop(event)"  onclick="my_onclick(event)">
+        {% for task in tasks %}
+            {% if task.user.email == user.email %}
+                {% if task.task_id == target_task.task_id %}
+                <li class="chart-li-one" id="new" style="background-color: #f0ad4e;grid-column: {{task.start_time_index()}}/{{task.end_time_index()}}" draggable="true" ondragstart="drag(event)"> {{task.task_type.short_label+', '+'Ord.ID: ' + task.order.order_id|string}} </li>
+                {% else %}
+                <li class="chart-li-one" id="{{task.task_id}}" style="grid-column: {{task.start_time_index()}}/{{task.end_time_index()}}" > {{task.task_type.short_label+', '+'Ord.ID: ' + task.order.order_id|string}} </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+	    </ul>
+    </div>
+{% endfor %}
+
+</div>
+
+<hr>
+<button id="save" type="button" class="btn btn-primary disabled" disabled='' onclick="save_scheduling()" style="min-width: 140px;">Save and close</button>
+<button type="button" class="btn btn-danger" onclick="cancel_scheduling()" style="float: right; min-width: 140px;">Close without saving</button>
+
+<form id="form_out" action="/abpreview/" method="POST">
+    <input id="task_id" name="task_id" type="hidden">
+    <input id="date" name="date" type="hidden">
+    <input id="start_time_index" name="start_time_index" type="hidden">
+    <input id="end_time_index" name="end_time_index" type="hidden">
+    <input id="user_email" name="user_email" type="hidden">
+</form>
+
+<script>
+    document.getElementById("save_bt").disabled = true;
+</script>
+
+{% endblock body %}

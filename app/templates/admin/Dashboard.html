@@ -1,0 +1,14 @@
+
+{% extends 'admin/my_master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+    {{ js_resources|indent(4)|safe }}
+    {{ css_resources|indent(4)|safe }}
+    {{ script_layout|indent(4)|safe }}
+{% endblock head %}
+
+{% block body %}
+<div class="row mt-5">
+    {{ div_layout|indent(4)|safe }}</div>
+{% endblock body %}
